@@ -19,11 +19,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'yarn'
           
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
             targets: aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
             
       - name: install frontend dependencies
         run: yarn install
