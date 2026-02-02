@@ -30,7 +30,7 @@ jobs:
         
       - name: Generate Version
         id: version
-        run: echo "VERSION=v0.1.${{ github.run_number }}" >> $GITHUB_ENV
+        run: echo "version=v0.1.${{ github.run_number }}" >> $GITHUB_OUTPUT
         
       - name: Create Tag
         uses: actions/github-script@v6
@@ -40,7 +40,7 @@ jobs:
               await github.rest.git.createRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                ref: 'refs/tags/${{ env.VERSION }}',
+                ref: 'refs/tags/${{ steps.version.outputs.version }}',
                 sha: context.sha
               });
             } catch (e) {
@@ -53,8 +53,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ env.VERSION }}
-          releaseName: "Uptime Watcher ${{ env.VERSION }}"
+          tagName: ${{ steps.version.outputs.version }}
+          releaseName: "Uptime Watcher ${{ steps.version.outputs.version }}"
           releaseBody: "Automated release build."
           releaseDraft: false
           prerelease: false
