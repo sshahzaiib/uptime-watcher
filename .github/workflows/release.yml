@@ -1,0 +1,61 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        platform: [macos-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+            targets: aarch64-apple-darwin x86_64-apple-darwin
+            
+      - name: install frontend dependencies
+        run: yarn install
+        
+      - name: Generate Version
+        id: version
+        run: echo "VERSION=v0.1.${{ github.run_number }}" >> $GITHUB_ENV
+        
+      - name: Create Tag
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'refs/tags/${{ env.VERSION }}',
+                sha: context.sha
+              });
+            } catch (e) {
+              console.log("Tag might already exist or error:", e);
+              // Continue anyway, tauri-action will handle release
+            }
+
+      - name: Build and Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ env.VERSION }}
+          releaseName: "Uptime Watcher ${{ env.VERSION }}"
+          releaseBody: "Automated release build."
+          releaseDraft: false
+          prerelease: false
+          args: --target universal-apple-darwin
