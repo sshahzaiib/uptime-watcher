@@ -43,7 +43,7 @@ struct AppState {
 
 // Helper to save state
 fn save_state(data: &AppStateData, path: &PathBuf) {
-    println!("Saving state to {:?}", path);
+    // println!("Saving state to {:?}", path);
     match serde_json::to_string_pretty(data) {
         Ok(json) => {
             if let Err(e) = fs::write(path, &json) {
@@ -62,7 +62,7 @@ fn update_tray_icon(app: &tauri::AppHandle, icon_set: &str, is_healthy: bool) {
         .path()
         .resolve("icons", tauri::path::BaseDirectory::Resource)
     {
-        println!("Resolved icons path: {:?}", resource_path);
+        // println!("Resolved icons path: {:?}", resource_path);
         let icon_name = if icon_set == "alt" {
             if is_healthy {
                 "checked.png"
@@ -184,10 +184,10 @@ fn set_icon_set(
     state: State<AppState>,
     preference: String,
 ) -> Result<(), String> {
-    println!(
-        "Command 'set_icon_set' invoked with preference: {}",
-        preference
-    );
+    // println!(
+    //     "Command 'set_icon_set' invoked with preference: {}",
+    //     preference
+    // );
     let mut data = state.data.lock().map_err(|_| "Failed to lock state")?;
     data.icon_set = preference.clone();
 

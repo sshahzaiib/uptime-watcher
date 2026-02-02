@@ -51,9 +51,9 @@ function App() {
       console.log("Frontend: Switching icon set to:", newSet);
       setIconSet(newSet);
       try {
-          console.log("Frontend: Invoking set_icon_set...");
+          // console.log("Frontend: Invoking set_icon_set...");
           await invoke("set_icon_set", { preference: newSet });
-          console.log("Frontend: Invoke success.");
+          // console.log("Frontend: Invoke success.");
       } catch (error) {
           console.error("Frontend: Failed to set icon set", error);
           alert("Error setting icons: " + JSON.stringify(error));
